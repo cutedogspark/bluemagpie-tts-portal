@@ -9,6 +9,17 @@ an open-source **Taiwanese-Mandarin** text-to-speech & voice-cloning model.
 This repo is the **serving + UI layer** around the model (not the model itself).
 It gives you a clean browser experience and a small HTTP API on top of BlueMagpie-TTS.
 
+## Slide deck preview
+
+A self-contained explainer deck ships in `portal/slides.html` (open in a browser, `←` / `→` to navigate, `F` for fullscreen):
+
+![Model architecture slide](assets/slides-model.png)
+
+<p>
+  <img src="assets/slides-cover.png" width="49%" alt="Cover slide" />
+  <img src="assets/slides-clone.png" width="49%" alt="Voice-cloning slide" />
+</p>
+
 ## Features
 
 - **Text → speech** in Taiwanese Mandarin (48 kHz).
