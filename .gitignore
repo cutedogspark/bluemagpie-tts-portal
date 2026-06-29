@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+*.pt
+*.wav
+*.mp3
+node_modules/
+
+.secrets/
+*.token
+*.egg-info/
+portal/test-results/
+portal/node_modules/

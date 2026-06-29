@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BlueMagpie-TTS（藍鵲）· 台灣華語語音合成與聲音克隆</title>
+  <meta name="description" content="BlueMagpie-TTS（藍鵲）：台灣華語語音合成與聲音克隆展示，部署於 GB10。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="wordmark">BlueMagpie-TTS<span class="latin">藍鵲</span></div>
+    <p class="eyebrow">台灣華語語音合成與聲音克隆 · 部署於 GB10</p>
+    <div class="tail-rule" aria-hidden="true"></div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="seg" role="tablist" aria-label="合成模式">
+        <button data-tab="general" class="active" role="tab">文字合成</button>
+        <button data-tab="clone" role="tab">克隆聲音</button>
+        <button data-tab="preset" role="tab">內建語者</button>
+      </div>
+
+      <label class="field-label" for="text">要合成的文字</label>
+      <textarea id="text" rows="3" placeholder="輸入台灣華語文字…">今天天氣真好，適合出門走走。</textarea>
+      <div class="examples">
+        <span class="examples-label">範例</span>
+        <div id="examples" class="chips"></div>
+      </div>
+
+      <div id="panel-preset" class="subpanel">
+        <label class="field-label" for="speaker">選擇語者</label>
+        <div class="speaker-row">
+          <select id="speaker"></select>
+          <button id="speaker-preview" class="ghost-btn" type="button">試聽語者</button>
+        </div>
+        <p id="preview-status" class="hint"></p>
+        <audio id="preview-audio" hidden></audio>
+      </div>
+
+      <div id="panel-clone" class="subpanel">
+        <div class="script-card">
+          <div class="script-head">
+            <span class="eyebrow">朗讀腳本</span>
+            <button id="script-next" class="ghost-btn small" type="button">換一段</button>
+          </div>
+          <p id="script-text" class="script-text"></p>
+          <p class="hint">錄音時照著上面這段文字、用平常說話的語氣念完。內容涵蓋多種聲調與字音，能取得更完整、更穩定的音色。</p>
+        </div>
+
+        <div class="record-card">
+          <div class="meter" id="meter" aria-hidden="true"></div>
+          <div class="rec-controls">
+            <button id="rec-start" class="rec-btn" type="button"><span class="dot"></span>開始錄音</button>
+            <button id="rec-stop" class="ghost-btn" type="button" disabled>停止</button>
+            <span id="rec-timer" class="timer" aria-hidden="true">00:00</span>
+          </div>
+          <p id="rec-status" class="rec-status" role="status">尚未錄音 · 建議錄 8–15 秒</p>
+          <audio id="rec-playback" controls hidden></audio>
+        </div>
+
+        <div class="clone-mode-row">
+          <label class="field-label" for="clone-mode">克隆模式</label>
+          <select id="clone-mode">
+            <option value="prompt">語音接續（最像 · 請照上面腳本念）</option>
+            <option value="centroid">語者向量（原本 · 較不像）</option>
+          </select>
+          <span class="hint" id="clone-mode-hint">「語音接續」會把你念的腳本當逐字稿，相似度通常最高。</span>
+        </div>
+
+        <label class="consent"><input type="checkbox" id="consent" /> 我確認此聲音為本人，或已取得當事人同意（必填）</label>
+        <p class="ethics">聲音克隆僅供本人或經授權之聲音使用，請勿用於冒充、詐騙或任何未授權用途。</p>
+      </div>
+
+      <div class="controls">
+        <div class="cfg">
+          <label class="field-label" for="cfg">風格強度 <span id="cfg-val" class="mono">2.0</span></label>
+          <input type="range" id="cfg" min="1" max="4" step="0.1" value="2.0" />
+          <span class="hint">＝「要多用力模仿目標聲音」。像化妝濃淡：<b>調低</b>比較自然、<b>調高</b>比較像，但太高會變僵硬、有機械感。建議 2–2.8。</span>
+          <label class="field-label" for="steps" style="margin-top:.7rem">取樣步數 <span id="steps-val" class="mono">10</span></label>
+          <input type="range" id="steps" min="4" max="20" step="1" value="10" />
+          <span class="hint">＝「聲音要打磨幾遍」。像修圖：<b>遍數越多</b>越細緻、雜訊越少，但也<b>越慢</b>。一般 9–12 就夠。</span>
+        </div>
+        <button id="synth" class="primary-btn">合成語音</button>
+      </div>
+
+      <p id="status" class="status" role="status"></p>
+
+      <div class="gpu" id="gpu">
+        <div class="gpu-head">
+          <span class="eyebrow">GB10 GPU 即時狀態</span>
+          <span class="gpu-readout mono" id="gpu-readout">—</span>
+        </div>
+        <div class="gpu-metric">
+          <span class="gpu-lab">GPU 使用率<br><span class="gpu-scope">整顆</span></span>
+          <div class="gpu-bar"><div class="gpu-fill" id="gpu-fill"></div><span class="gpu-pct mono" id="gpu-pct">—</span></div>
+        </div>
+        <div class="gpu-metric">
+          <span class="gpu-lab">本服務<br><span class="gpu-scope">記憶體</span></span>
+          <div class="gpu-bar"><div class="gpu-fill mem" id="gpu-mem-fill"></div><span class="gpu-pct mono" id="gpu-mem-val">—</span></div>
+        </div>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <div class="result-meta" id="result-meta"></div>
+        <div class="result-player">
+          <audio id="out" controls></audio>
+          <a id="download" class="ghost-btn" download="bluemagpie.mp3">下載 MP3</a>
+        </div>
+      </div>
+
+      <div class="history" id="history" hidden>
+        <div class="history-head">
+          <span class="eyebrow">產生紀錄 · 可逐筆並排比較</span>
+          <button id="history-clear" class="ghost-btn small" type="button">清除紀錄</button>
+        </div>
+        <div id="history-list"></div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <a href="slides.html" class="foot-link">📑 架構簡報</a>
+      <span class="dotsep">·</span>
+      <span>BlueMagpie-TTS（藍鵲）· OpenFormosa</span>
+      <span class="dotsep">·</span>
+      <span>48 kHz 單聲道 · GPU 即時合成</span>
+      <span class="dotsep">·</span>
+      <span>作者 <b>Gary Chen</b></span>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

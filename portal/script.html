@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BlueMagpie-TTS 簡報講稿（講者專用）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--paper:#fbfbf9;--ink:#16242e;--slate:#5b7a8c;--line:#e4e6e2;--blue:#1c5d80;--blue-deep:#16485f;--wash:#eef3f6;--coral:#d9544d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.75;font-size:17px}
+.wrap{max-width:780px;margin:0 auto;padding:3rem 1.3rem 5rem}
+h1{font-family:"Noto Serif TC",serif;font-size:2rem;line-height:1.25}
+.sub{color:var(--slate);margin:.5rem 0 0}
+.banner{background:var(--wash);border-left:4px solid var(--blue);border-radius:8px;padding:1rem 1.2rem;margin:1.6rem 0 2rem;font-size:.95rem}
+.banner b{color:var(--blue-deep)}
+.howto{border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:2.2rem;background:#fff}
+.howto h2{font-size:1.05rem;color:var(--blue-deep);margin-bottom:.6rem}
+.howto ul{margin:0;padding-left:1.2rem}
+.howto li{margin:.25rem 0}
+.slide{border:1px solid var(--line);border-radius:10px;background:#fff;padding:1.3rem 1.4rem;margin-bottom:1.1rem}
+.slide .head{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.7rem}
+.badge{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;font-weight:700;color:#fff;background:var(--blue);border-radius:6px;padding:.15em .6em;flex-shrink:0}
+.slide .ttl{font-weight:700;font-size:1.08rem;color:var(--ink)}
+.slide .et{color:var(--slate);font-size:.82rem;margin-left:auto}
+.say{margin:.2rem 0}
+.say::before{content:"🗣️ ";}
+.say q{quotes:"「" "」";color:var(--ink)}
+.tip{margin-top:.7rem;font-size:.9rem;color:var(--slate);background:var(--paper);border-radius:7px;padding:.6rem .8rem}
+.tip b{color:var(--coral)}
+.big-howto{border:2px solid var(--blue);background:#fff}
+.big-howto .badge{background:var(--coral)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:var(--wash);color:var(--blue-deep);padding:.1em .4em;border-radius:4px}
+a{color:var(--blue-deep)}
+.foot{margin-top:2.5rem;color:var(--slate);font-size:.85rem;border-top:1px solid var(--line);padding-top:1.2rem}
+b{color:var(--blue-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>BlueMagpie-TTS 簡報講稿</h1>
+  <p class="sub">講者專用小抄 · 對應簡報 <a href="slides.html">slides.html</a>（共 13 頁，約 10–12 分鐘）</p>
+
+  <div class="banner">
+    🔒 <b>這頁只給你看，聽眾不會看到。</b>每頁照著「🗣️」後面的話講就行——不用一字不漏，抓著意思自然說。每頁盡量別超過一分鐘。
+  </div>
+
+  <div class="howto">
+    <h2>開講前的三個小提醒</h2>
+    <ul>
+      <li><b>語氣放輕鬆</b>，多用比喻（簡報裡已經幫你準備好比喻了）。</li>
+      <li><b>邊講邊指</b>：講到方塊圖、比較表、程式碼時，用手或游標指著對應的地方。</li>
+      <li><b>留到最後 demo</b>：前面講概念，最後一頁直接現場玩，最有記憶點。</li>
+    </ul>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">01</span><span class="ttl">封面</span><span class="et">開場 ~30 秒</span></div>
+    <p class="say"><q>大家好。今天用大概十分鐘，帶大家認識 BlueMagpie、藍鵲——一個由台灣開源社群 OpenFormosa 釋出、專為台灣華語打造的語音模型。最後會直接現場 demo，大家可以一起玩。</q></p>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">02</span><span class="ttl">這是什麼</span></div>
+    <p class="say"><q>它做兩件事：你打字，它念出來；你錄一段自己的聲音，它就能用你的聲音去念別的話。特別針對台灣腔，還能中英混講。可以想成一個很會模仿的播音員。</q></p>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">03</span><span class="ttl">出處 · 開源</span></div>
+    <p class="say"><q>先講它從哪來。BlueMagpie 是台灣開源社群 OpenFormosa 開發釋出的；負責「發聲」的部分它沒有重造，而是沿用 OpenBMB 開源的 VoxCPM。核心精神就是「不重造輪子」——把力氣專注在台灣華語上。</q></p>
+    <div class="tip">指兩張卡：左邊 <b>OpenFormosa</b>（做 BlueMagpie 的社群）、右邊 <b>VoxCPM</b>（沿用的聲學基礎，OpenBMB 開源）。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">04</span><span class="ttl">整體架構</span></div>
+    <p class="say"><q>整體很單純：使用者開瀏覽器 → 我們的前端網頁 → 後面 GPU 主機上的模型。前端只負責展示跟轉接，真正運算在模型那邊。今天的重點，就是右下角那塊——模型本身。</q></p>
+    <div class="tip">由上而下指「瀏覽器 → 前端 → GPU 主機」，手停在右下角的「BlueMagpie 模型」。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">05</span><span class="ttl">拆開 BlueMagpie（分兩步）</span></div>
+    <p class="say"><q>把 BlueMagpie 拆開來看，跟人講話一樣分兩步：先用腦袋「想」要怎麼念，再用嘴巴「發聲」。它做的事，就是換上一顆新的腦袋叫 Barbet，沿用一套很會發聲的嘴 VoxCPM，中間用一個橋接模組把兩邊接起來。</q></p>
+    <div class="tip">指上面的等式與兩張卡：<b>紅色＝換掉的腦袋（Barbet）</b>、<b>灰色＝沿用的嘴（VoxCPM）</b>，中間點一下「🔌 橋接模組」。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">06</span><span class="ttl">和一般 TTS 不一樣</span></div>
+    <p class="say"><q>那它跟一般 TTS 差在哪？看這張表：腔調上，它專攻台灣腔、還能中英混講；做法上，是模組化的「換腦袋」，不是整包從零訓練；語言模型用 Mamba2 加 Attention 混合；來源上，是台灣開源社群、站在 VoxCPM 上。重點不是誰比較強，而是它側重台灣在地需求。</q></p>
+    <div class="tip">逐列指過去，<b>左灰（一般 TTS）、右藍（BlueMagpie）</b>，每列停一下；強調右邊那一欄。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">07</span><span class="ttl">克隆 · 最重要的觀念</span></div>
+    <p class="say"><q>接下來講聲音克隆，先講最重要的觀念：它其實沒有「重新學習」你的聲音。模型的大腦一個字都沒改，我們只是把你的錄音壓成一張「提示」遞給它，它一次就照著念，幾秒就好。這叫零樣本。</q></p>
+    <div class="tip">這頁是釐清誤會的關鍵，可以放慢一點講。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">08</span><span class="ttl">克隆 · 完整流程（圖）</span></div>
+    <p class="say"><q>完整流程是這樣：你的聲音先整理乾淨、切成幾段，每段用聲紋辨識器 ECAPA-TDNN 抽出一百九十二個數字，全部平均成一張穩定的指紋，最後拿這張指紋當「條件」去生成。你跟別人的指紋長得不一樣，模型就知道要模仿誰。</q></p>
+    <div class="tip">沿著流程從左指到右，停在「指紋」；最後指最下面「你 vs 別人」兩條不同的指紋。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">09</span><span class="ttl">程式怎麼用（給工程師）</span></div>
+    <p class="say"><q>這兩頁給想看程式的同仁。用法很單純：載入模型、呼叫 generate 就能合成。要克隆只多一行——用 extract_speaker_centroid 把「語音檔」變成 192 維的指紋，再用 speaker_centroid 帶進去。匯入語音檔，就是這一行。</q></p>
+    <div class="tip">非工程背景的同仁可以快速略過這兩頁。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">10</span><span class="ttl">語者怎麼產生 · 跟權重的差別</span></div>
+    <p class="say"><q>常見問題：語者是怎麼產生的？就是跑這一支 CLI，把參考音抽成一個 .pt 小檔，之後直接載入、重複使用。要特別澄清：這個 .pt 不是模型權重——它只有幾 KB，是聲音指紋；模型權重是另一個大約 7.7 GB 的大檔。換語者只是換一條指紋，不會動到那份權重，所有聲音共用同一份模型。</q></p>
+    <div class="tip">破除常見誤會：不是「每個語者一份權重」，而是<b>一份大權重 + 每人一條小指紋</b>。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">11</span><span class="ttl">cfg 旋鈕</span></div>
+    <p class="say"><q>有個旋鈕叫風格強度，控制「要多用力模仿」。轉小比較自然、轉大比較像，但太大會變僵硬、走音——就像化妝，太濃反而變一個怪人。建議停在中間。</q></p>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">12</span><span class="ttl">老實說（限制）</span></div>
+    <p class="say"><q>老實說它還有不足：只會國語、不會台語；英文縮寫有時候會念錯，比如 LLM；官方自己也說，它現在定位是展示跟研究，還不是正式上線等級。</q></p>
+    <div class="tip">誠實講限制反而加分，顯得可信。（補充：tokenizer 其實已經為台語、客語、注音預留位置——是還沒訓練，不是做不到。）</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">13</span><span class="ttl">Demo 時間</span><span class="et">收尾 + 現場操作</span></div>
+    <p class="say"><q>好，講夠多了，我們直接來玩。我示範三個：先打一句長範例念念看；再選內建語者、按試聽；最後錄一段我自己的聲音來克隆，看像不像。大家也可以拿手機開這個網址，一起試。</q></p>
+    <div class="tip">demo 時記得讓大家看上面那條「GPU 即時使用率」在合成時衝高，很有戲劇效果。網址：bluemagpie.intemotech.com</div>
+  </div>
+
+  <div class="foot">
+    💡 翻頁：← → 或空白鍵，F 全螢幕。這份講稿可以另開一個視窗/手機放旁邊對照。<br>
+    祝報告順利！
+  </div>
+</div>
+</body>
+</html>

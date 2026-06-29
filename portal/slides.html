@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BlueMagpie-TTS（藍鵲）· 用最白話的方式講模型與訓練</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#fbfbf9; --ink:#16242e; --slate:#5b7a8c; --line:#e4e6e2;
+  --blue:#1c5d80; --blue-deep:#16485f; --wash:#eef3f6; --coral:#d9544d;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#0f1a22;color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stage{position:relative;width:min(96vw,calc(94vh*16/9));aspect-ratio:16/9;background:var(--paper);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.5);overflow:hidden}
+.slide{position:absolute;inset:0;padding:6.2% 7%;display:none;flex-direction:column;animation:fade .35s ease}
+.slide.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:1.45vmin;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:1.6vmin}
+h1{font-family:"Noto Serif TC",serif;font-weight:700;font-size:5vmin;line-height:1.2}
+h2{font-family:"Noto Serif TC",serif;font-weight:700;font-size:3.5vmin;line-height:1.3;margin-bottom:2.4vmin}
+.lead{font-size:2.1vmin;color:var(--slate);line-height:1.7;max-width:54ch}
+ul{list-style:none;display:flex;flex-direction:column;gap:1.6vmin;margin-top:.5vmin}
+li{font-size:2.15vmin;line-height:1.55;padding-left:3vmin;position:relative}
+li::before{content:"";position:absolute;left:0;top:.85em;width:1.1vmin;height:1.1vmin;border-radius:50%;background:var(--blue)}
+li b{color:var(--blue-deep)}
+.muted{color:var(--slate)}
+.big{font-size:2.6vmin;line-height:1.6;max-width:50ch}
+.big b{color:var(--blue-deep)}
+code,.k{font-family:var(--mono);font-size:.9em;background:var(--wash);color:var(--blue-deep);padding:.1em .45em;border-radius:5px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:4vmin;margin-top:1vmin}
+.cols.s{grid-template-columns:1.15fr 1fr}
+.flow{display:flex;align-items:center;gap:1.4vmin;flex-wrap:wrap}
+.flow.col{flex-direction:column;align-items:stretch}
+.node{background:#fff;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:9px;padding:1.6vmin 2vmin;box-shadow:0 1px 2px rgba(22,36,46,.05)}
+.node .t{font-weight:700;font-size:2vmin}
+.node .d{font-size:1.5vmin;color:var(--slate);margin-top:.4vmin}
+.node.blue{background:var(--blue);border-left-color:var(--blue-deep)}
+.node.blue .t{color:#fff}.node.blue .d{color:#cfe0ea}
+.node.coral{border-left-color:var(--coral)}
+.node.big2{padding:2.2vmin 2.6vmin}.node.big2 .t{font-size:2.5vmin}
+.arrow{color:var(--blue);font-size:2.6vmin;flex-shrink:0}
+.arrow.down{transform:rotate(90deg)}
+.arrow.sm{font-size:2vmin}
+/* block diagram */
+.bd{display:flex;flex-direction:column;gap:.7vmin;max-width:82%;margin-top:.4vmin}
+.block{border:1px solid var(--line);border-radius:11px;background:#fff;padding:1.5vmin 1.8vmin}
+.block.gpu{border-color:var(--blue);background:var(--wash)}
+.block.solo{align-self:flex-start;padding:1vmin 1.8vmin;font-size:2vmin;font-weight:700}
+.block-title{font-weight:700;font-size:2vmin;margin-bottom:1.1vmin;display:flex;gap:.8vmin;align-items:center}
+.badge{font-family:var(--mono);font-size:1.3vmin;color:#fff;background:var(--blue);border-radius:5px;padding:.12em .65em;letter-spacing:.04em}
+.chips-row{display:flex;gap:.9vmin;flex-wrap:wrap}
+.chip{font-size:1.6vmin;background:var(--wash);color:var(--blue-deep);border-radius:6px;padding:.5vmin 1vmin;border:1px solid var(--line)}
+.chip.model{background:var(--blue);color:#fff;border-color:var(--blue-deep)}
+.subgrid{display:grid;grid-template-columns:1fr 1.35fr;gap:1.4vmin}
+.minib{border:1px solid var(--line);border-radius:8px;padding:1.1vmin 1.3vmin;font-size:1.65vmin;background:var(--paper)}
+.minib.model{background:#fff;border-left:3px solid var(--blue)}
+.dn{color:var(--blue);font-size:2vmin;line-height:1;padding-left:3vmin}
+.netlabel{font-family:var(--mono);font-size:1.35vmin;color:var(--slate);padding-left:2.4vmin}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2.2vmin 2.4vmin}
+.card h3{font-size:2vmin;color:var(--blue-deep);margin-bottom:1.1vmin;font-weight:700}
+.card li{font-size:1.85vmin}
+.card li::before{top:.8em;width:.9vmin;height:.9vmin}
+.tech{margin-top:auto;font-size:1.55vmin;color:var(--slate);border-top:1px dashed var(--line);padding-top:1.4vmin}
+.tech b{color:var(--blue-deep)}
+.code{font-family:var(--mono);font-size:1.55vmin;line-height:1.7;background:#0f1a22;color:#dbe7ee;border-radius:10px;padding:1.6vmin 2vmin;white-space:pre;overflow-x:auto;margin-top:.6vmin}
+.code .c{color:#7e98a8}
+.code .s{color:#9ad0a0}
+.code .k{color:#7fb2d4}
+.icon{font-size:3.2vmin;line-height:1}
+.steps{display:flex;gap:1.2vmin;align-items:stretch;margin-top:1vmin}
+.step{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:1.8vmin;text-align:center}
+.step .big-e{font-size:3.4vmin}
+.step .lab{font-weight:700;font-size:1.95vmin;margin-top:.6vmin}
+.step .sub{font-size:1.5vmin;color:var(--slate);margin-top:.4vmin}
+.step.on{border-color:var(--blue);background:var(--wash)}
+.step.swap{border:1.5px solid var(--coral)}
+.step.keep{background:#f4f6f4}
+.maps{font-size:1.45vmin;color:var(--slate);margin-top:.9vmin;border-top:1px dashed var(--line);padding-top:.7vmin}
+.t-swap{color:var(--coral);font-weight:700}
+.t-keep{color:var(--slate);font-weight:700}
+.cmp{width:100%;border-collapse:collapse;margin-top:1.2vmin}
+.cmp th,.cmp td{padding:1.25vmin 1.6vmin;text-align:left;font-size:1.95vmin;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp th{font-size:1.5vmin;color:var(--slate);font-weight:700;letter-spacing:.05em;border-bottom:2px solid var(--line)}
+.cmp th.ours,.cmp td.ours{background:var(--wash)}
+.cmp th.ours{color:var(--blue-deep)}
+.cmp td.ours{color:var(--ink)}
+.cmp td.dim{color:var(--slate)}
+.cmp .rowlab{font-weight:700;color:var(--ink);font-size:1.65vmin;white-space:nowrap}
+.cmp td.ours b{color:var(--blue-deep)}
+.eqline{font-size:2.1vmin;color:var(--ink);margin:-.5vmin 0 1.8vmin;line-height:1.5}
+.eqline .plus{color:var(--slate);font-weight:700;margin:0 .2vmin}
+.conn{display:flex;flex-direction:column;align-items:center;gap:.35vmin;flex-shrink:0}
+.connlab{font-size:1.3vmin;color:var(--blue-deep);font-weight:500;white-space:nowrap}
+/* fingerprint visual */
+.viz{display:flex;align-items:center;gap:1.8vmin;flex-wrap:wrap;margin-top:1.2vmin}
+.viz-item{display:flex;flex-direction:column;align-items:center;gap:.7vmin}
+.viz .lbl{font-size:1.45vmin;color:var(--slate);text-align:center;line-height:1.4}
+.wave{display:flex;align-items:flex-end;gap:1.4px;height:7vmin;padding:0 .4vmin;border-bottom:1px solid var(--line)}
+.wave i{width:.55vmin;background:linear-gradient(var(--blue),var(--blue-deep));border-radius:1px}
+.ecapa{background:var(--blue);color:#fff;border-radius:10px;padding:1.6vmin 1.8vmin;font-weight:700;font-size:1.85vmin;text-align:center;box-shadow:0 2px 6px rgba(22,36,46,.15)}
+.ecapa small{display:block;font-weight:400;font-size:1.3vmin;color:#cfe0ea;font-family:var(--mono);margin-top:.3vmin}
+.stack{display:flex;flex-direction:column;gap:.6vmin}
+.vec{display:flex;gap:1.4px;padding:.5vmin;background:#fff;border:1px solid var(--line);border-radius:6px}
+.vec i{width:.85vmin;height:2.4vmin;border-radius:1px;background:var(--blue)}
+.vec.thin i{height:1.4vmin}
+.vec.fp{border-color:var(--blue)}
+.vec.fp i{height:3.2vmin}
+.fpcompare{display:flex;align-items:center;gap:2vmin;margin-top:2vmin}
+/* diffusion denoise progression */
+.diffrow{display:flex;align-items:center;gap:1.2vmin;margin-top:1.5vmin;flex-wrap:wrap}
+.diffstep{display:flex;flex-direction:column;align-items:center;gap:.7vmin}
+.diffstep .lbl{font-size:1.5vmin;color:var(--slate);text-align:center}
+.diffstep .wave{border-bottom:1px solid var(--line)}
+/* bar comparison chart */
+.resultrow{display:flex;gap:4vmin;align-items:center;margin-top:.5vmin}
+.bars{display:flex;gap:5vmin;align-items:flex-end;margin-top:2vmin;padding-left:1vmin}
+.grp{display:flex;flex-direction:column;align-items:center;gap:1.2vmin}
+.plot{display:flex;align-items:flex-end;gap:1.6vmin;height:24vmin;border-bottom:2px solid var(--line)}
+.b{width:5.4vmin;border-radius:6px 6px 0 0;position:relative;min-height:2px}
+.b span{position:absolute;top:-2.7vmin;left:50%;transform:translateX(-50%);font-weight:700;font-size:1.7vmin;white-space:nowrap}
+.b.ours{background:linear-gradient(var(--blue),var(--blue-deep))}
+.b.ours span{color:var(--blue-deep)}
+.b.ref{background:#c2ccd2}
+.b.ref span{color:var(--slate)}
+.glab{font-size:1.85vmin;font-weight:500}
+.chartlegend{display:flex;flex-direction:column;gap:1vmin;align-self:center;font-size:1.7vmin;color:var(--slate)}
+.chartlegend i{display:inline-block;width:1.6vmin;height:1.6vmin;border-radius:3px;margin-right:.6vmin;vertical-align:middle}
+.chartlegend .ours{background:var(--blue)}.chartlegend .ref{background:#c2ccd2}
+.demolist li{margin-bottom:.6vmin}
+.say{display:inline-block;background:var(--wash);color:var(--blue-deep);border-radius:6px;padding:.25em .7em;font-weight:500;margin-top:.6vmin;font-size:.95em}
+.center{justify-content:center}
+.cover h1{font-size:7vmin}
+.cover .sub{font-size:2.4vmin;color:var(--slate);margin-top:2.5vmin}
+.cover .meta{margin-top:auto;font-family:var(--mono);font-size:1.6vmin;color:var(--slate)}
+.cover .latin{font-family:var(--mono);letter-spacing:.3em;color:var(--blue);font-size:2vmin;text-transform:uppercase}
+.credits{display:flex;gap:1.4vmin;margin-top:2.6vmin;flex-wrap:wrap}
+.cred{font-size:1.55vmin;color:var(--slate);background:#fff;border:1px solid var(--line);border-radius:7px;padding:.7vmin 1.3vmin}
+.cred b{color:var(--blue-deep);font-weight:700;margin-right:.5vmin}
+.note{margin-top:2.2vmin;font-size:1.7vmin;color:var(--slate);border-top:1px solid var(--line);padding-top:1.5vmin}
+.bar{position:absolute;left:0;bottom:0;height:4px;background:var(--blue);width:0;transition:width .3s;z-index:5}
+.num{position:absolute;right:2.4vmin;bottom:1.8vmin;font-family:var(--mono);font-size:1.5vmin;color:var(--slate);z-index:5}
+.deck{position:absolute;left:2.6vmin;bottom:1.6vmin;font-size:1.4vmin;color:var(--slate);z-index:5}
+.zone{position:absolute;top:0;bottom:0;width:18%;z-index:4;cursor:pointer}
+.zone.l{left:0}.zone.r{right:0}
+.hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);color:#6f8696;font-size:12px;font-family:var(--mono)}
+@media (max-width:820px), (orientation:portrait){
+  body{display:block;background:var(--paper)}
+  .stage{width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;border-radius:0;box-shadow:none}
+  .slide{padding:9vw 6vw 22vw;overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start}
+  .slide.center{justify-content:center}
+  .eyebrow{font-size:3.2vw;margin-bottom:3.5vw}
+  h1{font-size:8.5vw}.cover h1{font-size:12vw}
+  h2{font-size:6.6vw;margin-bottom:5vw}
+  .sub{font-size:4.6vw}.cover .meta{font-size:3vw}
+  ul{gap:3.2vw}
+  li{font-size:4.6vw;padding-left:6.5vw}
+  li::before{width:2.2vw;height:2.2vw;top:.7em}
+  .big{font-size:5.1vw;max-width:none}
+  .lead{font-size:4.6vw;max-width:none}
+  .cols,.cols.s{grid-template-columns:1fr;gap:4vw}
+  .flow{flex-direction:column;align-items:stretch;gap:2.8vw}
+  .flow .arrow{transform:rotate(90deg);align-self:center;font-size:6vw;padding:0}
+  .node .t{font-size:4.8vw}.node .d{font-size:3.6vw}
+  .steps{flex-direction:column;gap:2.8vw}
+  .steps .arrow{transform:rotate(90deg);align-self:center}
+  .step .big-e{font-size:11vw}.step .lab{font-size:5vw}.step .sub{font-size:3.8vw}
+  .bd{max-width:100%}
+  .subgrid{grid-template-columns:1fr}
+  .block-title{font-size:4.8vw}.badge{font-size:3vw}
+  .chip{font-size:3.8vw}.minib{font-size:4vw}
+  .netlabel{font-size:3.2vw;padding-left:3vw}.dn{font-size:5vw;padding-left:3vw}
+  .kv div{font-size:4.3vw;flex-wrap:wrap;gap:1.5vw}.kv .key{min-width:auto}
+  .card h3{font-size:4.7vw}.card li{font-size:4.3vw}
+  .tech{font-size:3.7vw}.note{font-size:3.9vw}
+  .code{font-size:3vw;padding:3.5vw;line-height:1.65}
+  .cmp th,.cmp td{font-size:3.7vw;padding:2.4vw 2vw}.cmp th{font-size:3vw}.cmp .rowlab{font-size:3.4vw;white-space:normal}
+  .viz{flex-direction:column;align-items:center;gap:3vw}
+  .viz .arrow{transform:rotate(90deg)}
+  .diffrow{flex-direction:column;align-items:center;gap:3vw}
+  .diffrow .arrow{transform:rotate(90deg)}
+  .diffstep .lbl{font-size:3.4vw}
+  .viz .lbl{font-size:3.4vw}
+  .wave{height:16vw}.wave i{width:1.5vw}
+  .ecapa{font-size:4.6vw}.ecapa small{font-size:3vw}
+  .vec i{width:2.1vw;height:5.5vw}.vec.thin i{height:3.2vw}.vec.fp i{height:7.5vw}
+  .fpcompare{flex-direction:column;gap:3vw}
+  .resultrow{flex-direction:column;align-items:stretch;gap:6vw}
+  .bars{gap:8vw;justify-content:center;padding-left:0;margin-top:6vw}
+  .plot{height:36vw}.b{width:13vw}.b span{font-size:3.8vw;top:-6vw}
+  .glab{font-size:3.7vw}.chartlegend{font-size:3.6vw;flex-direction:row;flex-wrap:wrap;gap:3vw;justify-content:center}
+  .num{font-size:3.2vw;right:2.5vw;bottom:2.5vw;background:var(--paper);padding:.5vw 2vw;border-radius:5px;box-shadow:0 0 9px 7px var(--paper)}
+  .deck{display:none}
+  .hint{display:none}
+  .zone{display:none}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- 1 cover -->
+  <section class="slide active cover">
+    <div class="eyebrow">台灣華語語音合成與聲音克隆</div>
+    <h1>BlueMagpie-TTS<br><span class="latin">藍鵲</span></h1>
+    <p class="sub">為台灣華語打造的開源語音模型 —— 打字念出來，也能用你的聲音念</p>
+    <div class="credits">
+      <span class="cred"><b>開源社群</b>OpenFormosa</span>
+      <span class="cred"><b>聲學基礎</b>VoxCPM（開源）</span>
+      <span class="cred"><b>授權</b>Apache-2.0</span>
+    </div>
+    <div class="meta">https://bluemagpie.intemotech.com</div>
+  </section>
+
+  <!-- 2 what -->
+  <section class="slide">
+    <div class="eyebrow">這是什麼</div>
+    <h2>一台會「講台灣華語」的機器</h2>
+    <div class="cols s">
+      <ul>
+        <li>打字進去 → 它<b>念出來</b></li>
+        <li>錄一段你的聲音 → 它<b>用你的聲音</b>念別的話</li>
+        <li>也能選<b>內建的聲音</b>來念</li>
+        <li>專攻<b>台灣腔</b>，還能<b>中英混講</b>（一句話裡中夾英）</li>
+      </ul>
+      <div class="card">
+        <h3>一句話</h3>
+        <p class="big" style="font-size:2.2vmin">就像一個<b>很會模仿的播音員</b>：你給它字，它念給你聽；你給它一段聲音，它就學起來。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2b source / open-source -->
+  <section class="slide">
+    <div class="eyebrow">出處 · 開源</div>
+    <h2>站在開源社群的基礎上</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>OpenFormosa　<span class="muted" style="font-size:1.5vmin;font-weight:400">做 BlueMagpie 的社群</span></h3>
+        <ul>
+          <li>台灣的<b>開源 AI 社群</b>，專注台灣在地語言</li>
+          <li>開發並<b>開源釋出 BlueMagpie-TTS</b></li>
+        </ul>
+        <p class="muted" style="font-size:1.5vmin;margin-top:1vmin">openformosa.com</p>
+      </div>
+      <div class="card">
+        <h3>VoxCPM　<span class="muted" style="font-size:1.5vmin;font-weight:400">沿用的聲學基礎</span></h3>
+        <ul>
+          <li>由國際開源社群 <b>OpenBMB</b> 釋出的開源語音模型</li>
+          <li>BlueMagpie 沿用它成熟的<b>聲學生成棧</b>，自己換上 Barbet</li>
+        </ul>
+        <p class="muted" style="font-size:1.5vmin;margin-top:1vmin">github.com/OpenBMB/VoxCPM · Apache-2.0</p>
+      </div>
+    </div>
+    <div class="note"><b>OpenBMB</b>：以 <b>MiniCPM／CPM</b> 系列大模型聞名的開源社群；<b>OpenFormosa</b> 站在這些開源成果上，把力氣專注在「<b>台灣華語</b>」上 —— 不重造輪子。</div>
+  </section>
+
+  <!-- 3 overall architecture — block diagram -->
+  <section class="slide">
+    <div class="eyebrow">整體架構</div>
+    <h2>前端負責「對外」，GPU 主機負責「運算」</h2>
+    <div class="bd">
+      <div class="block solo">瀏覽器（使用者）</div>
+      <div class="dn">↓</div>
+      <div class="block">
+        <div class="block-title"><span class="badge">前端</span> Portal Web</div>
+        <div class="chips-row">
+          <span class="chip">展示介面</span><span class="chip">麥克風錄音</span>
+          <span class="chip">播放 · 歷史</span><span class="chip">即時 GPU</span><span class="chip">API 入口</span>
+        </div>
+      </div>
+      <div class="netlabel">↓　私有內網（不對公網）</div>
+      <div class="block gpu">
+        <div class="block-title"><span class="badge">GPU 主機</span> GB10 推論</div>
+        <div class="subgrid">
+          <div style="display:flex;flex-direction:column;gap:1vmin">
+            <div class="minib">API 服務</div>
+            <div class="minib">排隊 · 限流 · 檢查</div>
+          </div>
+          <div class="minib model">
+            <b>BlueMagpie 模型</b>
+            <div class="chips-row" style="margin-top:.9vmin">
+              <span class="chip model">Barbet（想）</span>
+              <span class="chip model">擴散（發聲）</span>
+              <span class="chip model">語者編碼</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">本場焦點，就是右下角那塊：<b>BlueMagpie 模型本身</b>。</div>
+  </section>
+
+  <!-- 4 two steps -->
+  <section class="slide">
+    <div class="eyebrow">認識模型 · BlueMagpie 的組成</div>
+    <h2>拆開 BlueMagpie：跟人講話一樣，分兩步</h2>
+    <p class="eqline"><b>BlueMagpie</b>　＝　換上新「腦袋」<span class="t-swap">Barbet</span>　<span class="plus">＋</span>　沿用成熟的「嘴」<span class="t-keep">VoxCPM 聲學棧</span></p>
+    <div class="steps">
+      <div class="step swap">
+        <div class="big-e">🧠</div><div class="lab">① 先「想」</div>
+        <div class="sub">看懂字，規劃語氣、節奏、重音</div>
+        <div class="maps">＝ Barbet　<span class="t-swap">換上新的 ✦</span></div>
+      </div>
+      <div class="conn"><span class="arrow">→</span><span class="connlab">🔌 橋接模組</span></div>
+      <div class="step keep">
+        <div class="big-e">🗣️</div><div class="lab">② 再「發聲」</div>
+        <div class="sub">把想好的變成真正的聲音</div>
+        <div class="maps">＝ 擴散聲學棧（<b>VoxCPM</b>）　<span class="t-keep">直接沿用 ❄</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step on">
+        <div class="big-e">🔊</div><div class="lab">聲音</div>
+        <div class="sub">48 kHz 波形</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1.6vmin">
+      <h3>為什麼要這樣拆？</h3>
+      <p style="font-size:2vmin;line-height:1.6">把「<b>說什麼</b>」和「<b>怎麼發聲</b>」分開 → <b>換腦袋不用重學發聲</b>，省力、又不會破壞原本的音質。中間用一個<b>橋接模組</b>把兩邊接起來。</p>
+    </div>
+  </section>
+
+  <!-- 4b vs general TTS -->
+  <section class="slide">
+    <div class="eyebrow">和一般 TTS 有什麼不一樣</div>
+    <h2>它的「不一樣」，在這幾個地方</h2>
+    <table class="cmp">
+      <tr><th style="width:14vmin"></th><th>多數中文 TTS</th><th class="ours">BlueMagpie</th></tr>
+      <tr><td class="rowlab">腔調</td><td class="dim">偏中國普通話腔</td><td class="ours"><b>台灣腔</b>，還能<b>中英混講</b></td></tr>
+      <tr><td class="rowlab">怎麼做</td><td class="dim">多為端到端、整包從零訓練</td><td class="ours"><b>模組化「換腦袋」</b>：沿用開源發聲、只換語言模型</td></tr>
+      <tr><td class="rowlab">語言模型</td><td class="dim">多為純 Transformer</td><td class="ours"><b>Mamba2 ＋ Attention</b> 混合，省力又準</td></tr>
+      <tr><td class="rowlab">來源</td><td class="dim">多為封閉、通用市場</td><td class="ours">台灣<b>開源社群</b>，站在開源 VoxCPM 上</td></tr>
+    </table>
+    <div class="note">重點不是「誰比較強」，而是 BlueMagpie <b>側重台灣在地需求</b>（台灣腔、中英夾雜），並用<b>開源、不重造輪子</b>的方式把它組起來。</div>
+  </section>
+
+  <!-- 7b cloning concept -->
+  <section class="slide">
+    <div class="eyebrow">聲音克隆 · 最重要的觀念</div>
+    <h2>不是「重新學習」，是「給一張提示」</h2>
+    <p class="big">模型的大腦<b>一個字都沒改</b>。<br>你的錄音被壓成一串數字，當成<b>提示</b>遞給<b>早就訓練好的模型</b>，它一次就照著念。</p>
+    <div class="cols" style="margin-top:2.4vmin">
+      <div class="card">
+        <h3>所以它很快</h3>
+        <ul>
+          <li>不用訓練，<b>幾秒就完成</b></li>
+          <li>換一個人 = 換一張提示，模型<b>不用重學</b></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>對比另一種做法</h3>
+        <ul>
+          <li>有些克隆要拿<b>幾十分鐘</b>錄音去「重新訓練」</li>
+          <li>那種慢很多；我們這種是<b>當場、零樣本</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="tech">其實是：<b>conditioning（條件化）+ zero-shot（零樣本）</b>；一次 <b>forward pass（推論）</b>，不更新模型參數。</div>
+  </section>
+
+  <!-- 7c cloning pipeline (visual) -->
+  <section class="slide">
+    <div class="eyebrow">聲音克隆 · 完整流程</div>
+    <h2>從你的聲音，到一張「聲音指紋」</h2>
+    <div class="viz">
+      <div class="viz-item">
+        <div class="wave" data-n="44"></div>
+        <div class="lbl">🎙️ 你的聲音<br>16 kHz</div>
+      </div>
+      <span class="arrow">→</span>
+      <div class="viz-item">
+        <div class="ecapa">聲紋辨識器<small>ECAPA-TDNN</small></div>
+        <div class="lbl">每 6 秒切一段</div>
+      </div>
+      <span class="arrow">→</span>
+      <div class="viz-item">
+        <div class="stack">
+          <div class="vec thin" data-n="26" data-seed="1"></div>
+          <div class="vec thin" data-n="26" data-seed="7"></div>
+          <div class="vec thin" data-n="26" data-seed="13"></div>
+        </div>
+        <div class="lbl">每段 → 192 個數字</div>
+      </div>
+      <span class="arrow">→</span>
+      <div class="viz-item">
+        <div class="vec fp" data-n="26" data-seed="4"></div>
+        <div class="lbl">平均 → 你的指紋</div>
+      </div>
+    </div>
+    <div class="fpcompare">
+      <div class="viz-item"><div class="vec fp" data-n="22" data-seed="4"></div><div class="lbl">你</div></div>
+      <span class="muted" style="font-size:1.6vmin">指紋不同 → 模型就知道要模仿誰</span>
+      <div class="viz-item"><div class="vec fp" data-n="22" data-seed="20"></div><div class="lbl">別人</div></div>
+    </div>
+    <div class="tech">「聲紋辨識器」<b>ECAPA-TDNN</b>（本來用來認人，借來抽指紋）；指紋＝<b>L2 正規化的 192 維向量（centroid＝平均質心）</b>。模型<b>訓練時就學會「看著指紋控制音色」</b>，所以沒聽過的人也能克隆（零樣本）。</div>
+  </section>
+
+  <!-- 7c2 clone modes -->
+  <section class="slide">
+    <div class="eyebrow">聲音克隆 · 怎麼做更像</div>
+    <h2>兩種克隆方式 —— 我們改用最像的「語音接續」</h2>
+    <table class="cmp">
+      <tr><th style="width:24vmin">模式</th><th>用什麼當條件</th><th>相似度</th></tr>
+      <tr><td class="rowlab">語者向量<br><span class="muted" style="font-size:1.4vmin">speaker_centroid（原本）</span></td><td class="dim">只用 <b>192 維向量</b>（ECAPA 聲紋）</td><td class="dim">較不像 · 只抓「大概的音色」</td></tr>
+      <tr><td class="rowlab ours">語音接續<br><span class="muted" style="font-size:1.4vmin">prompt_wav ＋ prompt_text（現在採用）</span></td><td class="ours">參考音 ＋ <b>逐字稿</b>做「語音接續」</td><td class="ours"><b>最像</b>（典型零樣本克隆）</td></tr>
+    </table>
+    <div class="note">原本只送一個 <b>192 維數字</b>進去、細節幾乎都壓掉 —— 難怪不夠像；<b>現在改用「語音接續」</b>（參考音＋你念的腳本逐字稿），相似度明顯提升。</div>
+  </section>
+
+  <!-- 7c2b what is voice continuation -->
+  <section class="slide">
+    <div class="eyebrow">聲音克隆 · 語音接續是什麼</div>
+    <h2>像「接話」：用你的聲音，接著講下去</h2>
+    <p class="big">不是「用一串數字<b>描述</b>你的聲音」，<br>而是給模型一段<b>你講話的錄音 ＋ 那段話的逐字稿</b>，叫它<b>用同一個聲音「接著講」</b>你要的新句子。</p>
+    <div class="flow" style="margin-top:1.6vmin">
+      <div class="node coral"><div class="t">🎙️ 你的錄音</div><div class="d">＋ 逐字稿（朗讀腳本）</div></div>
+      <span class="arrow">→</span>
+      <div class="node"><div class="t">模型把它當「前文」</div><div class="d">acoustic prompt</div></div>
+      <span class="arrow">→</span>
+      <div class="node blue"><div class="t">🔊 用同嗓音念「新文字」</div></div>
+    </div>
+    <div class="cols" style="margin-top:1.8vmin">
+      <div class="card"><h3>🪪 語者向量</h3><p style="font-size:1.85vmin">給一張「證件照」——把聲音壓成 192 個數字，只剩大概輪廓。<b>加大維度也沒用：快照放大，還是快照。</b></p></div>
+      <div class="card"><h3>🎬 語音接續</h3><p style="font-size:1.85vmin">給一段「本人說話的影片」讓它照著接——音色、語調、節奏都看得到。</p></div>
+    </div>
+    <div class="tech">概念是<b>脈絡內學習（in-context learning）</b>，跟大型語言模型「接龍」同理。192 維由 ECAPA-TDNN 固定，<b>加大要重訓、且報酬遞減</b>——真正變像靠的是<b>換方法（語音接續）</b>，不是加數字。<b>關鍵：逐字稿要對得上</b> → demo 請照腳本念。</div>
+  </section>
+
+  <!-- 7c3 clone improvement plan -->
+  <section class="slide">
+    <div class="eyebrow">聲音克隆 · 改善計劃</div>
+    <h2>怎麼讓它更像</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>① 換成 prompt_wav「語音接續」<span class="muted" style="font-size:1.5vmin;font-weight:400"> · 最大改善</span></h3>
+        <ul>
+          <li>錄音當 <code>prompt_wav</code>、朗讀腳本當 <code>prompt_text</code> 一起送</li>
+          <li><b>portal 早就有朗讀腳本</b> → 正好知道逐字稿！這正是 in-context 克隆需要的</li>
+          <li>退路：沒逐字稿就退回 <code>語者向量</code>（reference 模式此版不穩定）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>② 錄到「乾淨、真實」的聲音</h3>
+        <ul>
+          <li>瀏覽器預設開<b>回音消除／降噪／自動增益</b>，會<b>改變音色</b> → 全部關掉</li>
+          <li>錄久一點、念完整段腳本、環境安靜</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">①＋② 是<b>根因、且我們完全可控</b>，預期會明顯變像。再上去就是模型天花板（零樣本、非 production），要靠針對特定人微調或模型更新。</div>
+  </section>
+
+  <!-- 7d code: how to use -->
+  <section class="slide">
+    <div class="eyebrow">程式怎麼用</div>
+    <h2>載入 → 合成 → 克隆，三段就好</h2>
+    <pre class="code"><span class="c"># 1) 載入模型（權重 + tokenizer）</span>
+model = BlueMagpieModel.from_local(model_dir, tokenizer=tok, device=<span class="s">"cuda"</span>)
+
+<span class="c"># 2) 一般合成：文字 → 語音</span>
+audio = model.generate(target_text=<span class="s">"今天天氣真好。"</span>, cfg_value=2.0)
+
+<span class="c"># 3) 克隆：先從「語音檔」抽出指紋，再帶進去合成</span>
+<span class="k">from</span> bluemagpie <span class="k">import</span> extract_speaker_centroid
+centroid = extract_speaker_centroid(<span class="s">"reference.wav"</span>)        <span class="c"># → 192 維</span>
+audio = model.generate(target_text=<span class="s">"…"</span>, speaker_centroid=centroid, cfg_value=2.8)</pre>
+    <div class="tech">匯入語音檔的關鍵就一行：<b>extract_speaker_centroid("檔案.wav")</b> → 得到 192 維「指紋」；合成時用 <b>speaker_centroid=</b> 帶進去就會模仿。</div>
+  </section>
+
+  <!-- 7e code: how a speaker vector is produced vs weights -->
+  <section class="slide">
+    <div class="eyebrow">語者向量怎麼產生 · 跟權重的差別</div>
+    <h2>把一個人的聲音，存成一個小檔</h2>
+    <div class="cols s">
+      <div>
+        <pre class="code"><span class="c"># 1) 從參考音「產生」語者向量檔（CLI）</span>
+python scripts/extract_speaker_centroid.py \
+    --audio reference.wav --out my_voice.pt
+<span class="c"># 同一人多段更穩： --audio a.wav b.wav c.wav</span>
+
+<span class="c"># 2) 之後直接載入這個 .pt 來用</span>
+c = torch.load(<span class="s">"my_voice.pt"</span>)        <span class="c"># [192]</span>
+audio = model.generate(target_text=<span class="s">"…"</span>, speaker_centroid=c)
+
+<span class="c"># 3) 內建語者：打包好的多條向量</span>
+d = torch.load(<span class="s">"speaker_centroids.pt"</span>)
+<span class="c"># {speaker_ids:[…], centroids:[N,192]}</span></pre>
+      </div>
+      <div class="card">
+        <h3>語者向量 ≠ 模型權重</h3>
+        <ul>
+          <li><b>語者向量</b> <code>.pt</code>：192 數字、<b>幾 KB</b>，一人一條</li>
+          <li><b>模型權重</b> <code>pytorch_model.bin</code>：約 <b>7.7 GB</b></li>
+          <li>換人只換 <code>.pt</code>；<b>權重不變</b>、所有聲音共用</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tech">你自己抽的 <b>my_voice.pt</b> 和內建的 <b>speaker_centroids.pt</b> 是同一種東西，只是後者多打包了幾個人；產生方式都是上面那支 <b>extract_speaker_centroid</b>。</div>
+  </section>
+
+  <!-- 8 cfg -->
+  <section class="slide">
+    <div class="eyebrow">一個重要旋鈕</div>
+    <h2>「要多用力模仿」的旋鈕</h2>
+    <div class="cols s">
+      <ul>
+        <li>轉小 → 比較自然、但比較不像</li>
+        <li>轉大 → 比較像、但太大會<b>變僵硬、走音</b></li>
+        <li>建議停在<b>中間（2.0–2.8）</b></li>
+      </ul>
+      <div class="card">
+        <h3>打個比方</h3>
+        <p class="big" style="font-size:2.1vmin">像<b>化妝</b>：淡妝自然好看，妝太濃反而變一個怪人。</p>
+      </div>
+    </div>
+    <div class="tech">其實是：<b>cfg_value</b>（無分類器引導強度）。</div>
+  </section>
+
+  <!-- 13 limits -->
+  <section class="slide">
+    <div class="eyebrow">老實說</div>
+    <h2>它還不會什麼</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>目前限制</h3>
+        <ul>
+          <li>只會<b>台灣華語（國語）</b>，<b>不會台語</b></li>
+          <li>英文<b>縮寫</b>可能念錯（例如 "LLM"）</li>
+          <li><b>不是 production 等級</b>（官方定位為展示／研究）</li>
+          <li>錄音越乾淨，克隆越像</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>之後可以做</h3>
+        <ul>
+          <li>加上<b>台語</b></li>
+          <li>調情緒、語速</li>
+          <li>多人同時用、加浮水印</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 closing / demo cheat sheet -->
+  <section class="slide">
+    <div class="eyebrow">Demo 時間 · 動手玩玩看</div>
+    <h2>來實際聽聽看</h2>
+    <div class="cols s">
+      <ul class="demolist">
+        <li><b>① 文字合成</b>：點一句長範例 →<br><span class="say">「感謝大家今天撥空參加這場說明會…」</span></li>
+        <li><b>② 內建語者</b>：選 hung_yi_lee，按「試聽語者」 →<br><span class="say">「各位好，這是內建語者的聲音示範。」</span></li>
+        <li><b>③ 克隆我的聲音</b>：勾同意、照腳本錄約 10 秒 →<br><span class="say">「嗨，這是用我的聲音克隆出來的，像不像？」</span></li>
+      </ul>
+      <div class="card">
+        <h3>小提醒</h3>
+        <ul>
+          <li>風格強度先用<b>預設</b>（一般 2.0／克隆 2.8）</li>
+          <li><b>長句</b>更能聽出停頓與語氣</li>
+          <li>合成時看上面 <b>GPU 使用率衝高</b></li>
+          <li>錄音<b>安靜、久一點</b>會更像</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">https://bluemagpie.intemotech.com　·　歡迎現場操作 · Q &amp; A</div>
+  </section>
+
+  <div class="zone l" id="prev"></div>
+  <div class="zone r" id="next"></div>
+  <div class="bar" id="bar"></div>
+  <div class="deck">BlueMagpie-TTS（藍鵲）· 白話版</div>
+  <div class="num"><span id="cur">1</span> / <span id="tot">14</span></div>
+</div>
+<div class="hint">← → 或空白鍵翻頁　·　F 全螢幕　·　點左右兩側切換</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+document.getElementById('tot').textContent=slides.length;
+function show(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.getElementById('cur').textContent=i+1;
+  document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+  history.replaceState(null,'','#'+(i+1));
+}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){show(i+1);e.preventDefault();}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){show(i-1);}
+  else if(e.key==='Home'){show(0);}
+  else if(e.key==='End'){show(slides.length-1);}
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+});
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+addEventListener('hashchange',()=>{const n=(parseInt(location.hash.slice(1))||1)-1;if(n!==i)show(n);});
+
+// render fingerprint + waveform visuals (deterministic, no randomness)
+function _shade(u){const a=(0.22+0.78*Math.max(0,Math.min(1,u))).toFixed(3);return 'rgba(28,93,128,'+a+')';}
+function _fract(x){return x-Math.floor(x);}
+document.querySelectorAll('.wave').forEach(w=>{
+  const n=+w.dataset.n||40;
+  const hasClean=w.dataset.clean!==undefined;       // diffusion stages blend noise→clean
+  const t=hasClean?parseFloat(w.dataset.clean):1;   // 0 = pure noise, 1 = clean wave
+  const seed=+w.dataset.seed||0;let h='';
+  for(let k=0;k<n;k++){
+    const v=Math.abs(Math.sin(k*0.7)+0.6*Math.sin(k*0.29+1));
+    const cleanH=18+Math.min(1,v/1.6)*64;
+    const noise=_fract(Math.sin((k+1)*12.9898+seed*78.233)*43758.5453);
+    const noiseH=10+noise*86;
+    const ht=hasClean?(noiseH*(1-t)+cleanH*t):cleanH;
+    h+='<i style="height:'+ht.toFixed(0)+'%"></i>';
+  }
+  w.innerHTML=h;
+});
+document.querySelectorAll('.vec').forEach(v=>{
+  const n=+v.dataset.n||24,seed=+v.dataset.seed||1;let h='';
+  for(let k=0;k<n;k++){const val=(Math.sin((k+seed)*1.27)+Math.sin((k+seed)*0.53))/2;h+='<i style="background:'+_shade((val+1)/2)+'"></i>';}
+  v.innerHTML=h;
+});
+
+// swipe navigation (mobile)
+let _tx=null,_ty=null;
+addEventListener('touchstart',e=>{const t=e.changedTouches[0];_tx=t.clientX;_ty=t.clientY;},{passive:true});
+addEventListener('touchend',e=>{
+  if(_tx==null)return;const t=e.changedTouches[0];const dx=t.clientX-_tx,dy=t.clientY-_ty;
+  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4){show(i+(dx<0?1:-1));}
+  _tx=null;
+},{passive:true});
+
+show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>

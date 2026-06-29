@@ -1,0 +1,2 @@
+{ "name": "bluemagpie-portal", "private": true,
+  "devDependencies": { "@playwright/test": "^1.45.0" } }
