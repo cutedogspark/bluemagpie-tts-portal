@@ -41,7 +41,7 @@ b{color:var(--blue-deep)}
 <body>
 <div class="wrap">
   <h1>BlueMagpie-TTS 簡報講稿</h1>
-  <p class="sub">講者專用小抄 · 對應簡報 <a href="slides.html">slides.html</a>（共 13 頁，約 10–12 分鐘）</p>
+  <p class="sub">講者專用小抄 · 對應簡報 <a href="slides.html">slides.html</a>（共 16 頁，約 12–14 分鐘）</p>
 
   <div class="banner">
     🔒 <b>這頁只給你看，聽眾不會看到。</b>每頁照著「🗣️」後面的話講就行——不用一字不漏，抓著意思自然說。每頁盡量別超過一分鐘。
@@ -51,13 +51,13 @@ b{color:var(--blue-deep)}
     <h2>開講前的三個小提醒</h2>
     <ul>
       <li><b>語氣放輕鬆</b>，多用比喻（簡報裡已經幫你準備好比喻了）。</li>
-      <li><b>邊講邊指</b>：講到方塊圖、比較表、程式碼時，用手或游標指著對應的地方。</li>
+      <li><b>邊講邊指</b>：講到方塊圖、比較表、流程圖、程式碼時，用手或游標指著對應的地方。</li>
       <li><b>留到最後 demo</b>：前面講概念，最後一頁直接現場玩，最有記憶點。</li>
     </ul>
   </div>
 
   <div class="slide"><div class="head"><span class="badge">01</span><span class="ttl">封面</span><span class="et">開場 ~30 秒</span></div>
-    <p class="say"><q>大家好。今天用大概十分鐘，帶大家認識 BlueMagpie、藍鵲——一個由台灣開源社群 OpenFormosa 釋出、專為台灣華語打造的語音模型。最後會直接現場 demo，大家可以一起玩。</q></p>
+    <p class="say"><q>大家好。今天用大概十二分鐘，帶大家認識 BlueMagpie、藍鵲——一個由台灣開源社群 OpenFormosa 釋出、專為台灣華語打造的語音模型。最後會直接現場 demo，大家可以一起玩。</q></p>
   </div>
 
   <div class="slide"><div class="head"><span class="badge">02</span><span class="ttl">這是什麼</span></div>
@@ -65,8 +65,8 @@ b{color:var(--blue-deep)}
   </div>
 
   <div class="slide"><div class="head"><span class="badge">03</span><span class="ttl">出處 · 開源</span></div>
-    <p class="say"><q>先講它從哪來。BlueMagpie 是台灣開源社群 OpenFormosa 開發釋出的；負責「發聲」的部分它沒有重造，而是沿用 OpenBMB 開源的 VoxCPM。核心精神就是「不重造輪子」——把力氣專注在台灣華語上。</q></p>
-    <div class="tip">指兩張卡：左邊 <b>OpenFormosa</b>（做 BlueMagpie 的社群）、右邊 <b>VoxCPM</b>（沿用的聲學基礎，OpenBMB 開源）。</div>
+    <p class="say"><q>先講它從哪來。BlueMagpie 是台灣開源社群 OpenFormosa 開發釋出的；負責「發聲」的部分沒有重造，而是沿用 OpenBMB 開源的 VoxCPM。核心精神就是「不重造輪子」——把力氣專注在台灣華語上。</q></p>
+    <div class="tip">指兩張卡：左 <b>OpenFormosa</b>（做 BlueMagpie 的社群）、右 <b>VoxCPM</b>（沿用的聲學基礎，OpenBMB 開源）。</div>
   </div>
 
   <div class="slide"><div class="head"><span class="badge">04</span><span class="ttl">整體架構</span></div>
@@ -75,13 +75,13 @@ b{color:var(--blue-deep)}
   </div>
 
   <div class="slide"><div class="head"><span class="badge">05</span><span class="ttl">拆開 BlueMagpie（分兩步）</span></div>
-    <p class="say"><q>把 BlueMagpie 拆開來看，跟人講話一樣分兩步：先用腦袋「想」要怎麼念，再用嘴巴「發聲」。它做的事，就是換上一顆新的腦袋叫 Barbet，沿用一套很會發聲的嘴 VoxCPM，中間用一個橋接模組把兩邊接起來。</q></p>
+    <p class="say"><q>把 BlueMagpie 拆開來看，跟人講話一樣分兩步：先用腦袋「想」要怎麼念，再用嘴巴「發聲」。它做的事，就是換上一顆新腦袋叫 Barbet，沿用一套很會發聲的嘴 VoxCPM，中間用橋接模組把兩邊接起來。</q></p>
     <div class="tip">指上面的等式與兩張卡：<b>紅色＝換掉的腦袋（Barbet）</b>、<b>灰色＝沿用的嘴（VoxCPM）</b>，中間點一下「🔌 橋接模組」。</div>
   </div>
 
   <div class="slide"><div class="head"><span class="badge">06</span><span class="ttl">和一般 TTS 不一樣</span></div>
-    <p class="say"><q>那它跟一般 TTS 差在哪？看這張表：腔調上，它專攻台灣腔、還能中英混講；做法上，是模組化的「換腦袋」，不是整包從零訓練；語言模型用 Mamba2 加 Attention 混合；來源上，是台灣開源社群、站在 VoxCPM 上。重點不是誰比較強，而是它側重台灣在地需求。</q></p>
-    <div class="tip">逐列指過去，<b>左灰（一般 TTS）、右藍（BlueMagpie）</b>，每列停一下；強調右邊那一欄。</div>
+    <p class="say"><q>那它跟一般 TTS 差在哪？看這張表：腔調上專攻台灣腔、能中英混講；做法上是模組化的「換腦袋」，不是整包從零訓練；語言模型用 Mamba2 加 Attention 混合；來源是台灣開源社群、站在 VoxCPM 上。重點不是誰比較強，而是它側重台灣在地需求。</q></p>
+    <div class="tip">逐列指過去，<b>左灰（一般 TTS）、右藍（BlueMagpie）</b>，強調右邊那一欄。</div>
   </div>
 
   <div class="slide"><div class="head"><span class="badge">07</span><span class="ttl">克隆 · 最重要的觀念</span></div>
@@ -90,31 +90,46 @@ b{color:var(--blue-deep)}
   </div>
 
   <div class="slide"><div class="head"><span class="badge">08</span><span class="ttl">克隆 · 完整流程（圖）</span></div>
-    <p class="say"><q>完整流程是這樣：你的聲音先整理乾淨、切成幾段，每段用聲紋辨識器 ECAPA-TDNN 抽出一百九十二個數字，全部平均成一張穩定的指紋，最後拿這張指紋當「條件」去生成。你跟別人的指紋長得不一樣，模型就知道要模仿誰。</q></p>
+    <p class="say"><q>完整流程是這樣：你的聲音先整理乾淨、切成幾段，每段用聲紋辨識器 ECAPA-TDNN 抽出一百九十二個數字，平均成一張穩定的指紋，最後拿這張指紋當「條件」去生成。你跟別人的指紋長得不一樣，模型就知道要模仿誰。</q></p>
     <div class="tip">沿著流程從左指到右，停在「指紋」；最後指最下面「你 vs 別人」兩條不同的指紋。</div>
   </div>
 
-  <div class="slide"><div class="head"><span class="badge">09</span><span class="ttl">程式怎麼用（給工程師）</span></div>
-    <p class="say"><q>這兩頁給想看程式的同仁。用法很單純：載入模型、呼叫 generate 就能合成。要克隆只多一行——用 extract_speaker_centroid 把「語音檔」變成 192 維的指紋，再用 speaker_centroid 帶進去。匯入語音檔，就是這一行。</q></p>
-    <div class="tip">非工程背景的同仁可以快速略過這兩頁。</div>
+  <div class="slide"><div class="head"><span class="badge">09</span><span class="ttl">克隆 · 兩種方式</span></div>
+    <p class="say"><q>其實克隆有兩種可用的方式。原本是「語者向量」——把聲音壓成 192 個數字，比較不像。我們現在改用「語音接續」——給它一段參考音加上逐字稿，相似度最高。</q></p>
+    <div class="tip">指表格：高亮那列（語音接續）就是現在採用的、最像的。</div>
   </div>
 
-  <div class="slide"><div class="head"><span class="badge">10</span><span class="ttl">語者怎麼產生 · 跟權重的差別</span></div>
-    <p class="say"><q>常見問題：語者是怎麼產生的？就是跑這一支 CLI，把參考音抽成一個 .pt 小檔，之後直接載入、重複使用。要特別澄清：這個 .pt 不是模型權重——它只有幾 KB，是聲音指紋；模型權重是另一個大約 7.7 GB 的大檔。換語者只是換一條指紋，不會動到那份權重，所有聲音共用同一份模型。</q></p>
-    <div class="tip">破除常見誤會：不是「每個語者一份權重」，而是<b>一份大權重 + 每人一條小指紋</b>。</div>
+  <div class="slide"><div class="head"><span class="badge">10</span><span class="ttl">語音接續是什麼</span></div>
+    <p class="say"><q>語音接續是什麼？就像「接話」——給模型一段你講話的錄音，加上那段話的逐字稿，叫它用同一個聲音「接著講」你要的新句子。打個比方：語者向量是給一張「證件照」，語音接續是給一段「本人說話的影片」讓它照著接，細節差很多。也因為這樣，把 192 加大也沒用——快照放大還是快照，關鍵是換方法。</q></p>
+    <div class="tip">指流程（錄音＋逐字稿 → 前文 → 同嗓音念新句），再指兩張比喻卡「🪪 證件照 vs 🎬 影片」。</div>
   </div>
 
-  <div class="slide"><div class="head"><span class="badge">11</span><span class="ttl">cfg 旋鈕</span></div>
-    <p class="say"><q>有個旋鈕叫風格強度，控制「要多用力模仿」。轉小比較自然、轉大比較像，但太大會變僵硬、走音——就像化妝，太濃反而變一個怪人。建議停在中間。</q></p>
+  <div class="slide"><div class="head"><span class="badge">11</span><span class="ttl">改善計劃（怎麼更像）</span></div>
+    <p class="say"><q>要讓它更像，有兩招、而且都我們可控：第一，用語音接續，把你照著念的腳本當逐字稿一起送；第二，錄到乾淨真實的聲音——把瀏覽器的降噪、回音消除、自動增益關掉，錄久一點、環境安靜。再往上就是模型本身的天花板了。</q></p>
+    <div class="tip">demo 前先確認：模式選「語音接續」、環境安靜、照腳本念。</div>
   </div>
 
-  <div class="slide"><div class="head"><span class="badge">12</span><span class="ttl">老實說（限制）</span></div>
+  <div class="slide"><div class="head"><span class="badge">12</span><span class="ttl">程式怎麼用（給工程師）</span></div>
+    <p class="say"><q>這頁給想看程式的同仁。用法很單純：載入模型、呼叫 generate 就能合成。要克隆只多一行——用 extract_speaker_centroid 把語音檔變成指紋，再帶進去。非工程背景的同仁可以快速略過。</q></p>
+    <div class="tip">一句話帶過：<b>匯入語音檔，就是 <code>extract_speaker_centroid("檔案.wav")</code> 這一行</b>。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">13</span><span class="ttl">語者怎麼產生 · 跟權重的差別</span></div>
+    <p class="say"><q>常見問題：語者是怎麼產生的？就是跑這一支 CLI，把參考音抽成一個 .pt 小檔，之後直接載入重複用。要特別澄清：這個 .pt 不是模型權重——它只有幾 KB，是聲音指紋；模型權重是另一個大約 7.7 GB 的大檔。換語者只是換一條指紋，不會動到那份權重，所有聲音共用同一份模型。</q></p>
+    <div class="tip">破除誤會：不是「每個語者一份權重」，而是<b>一份大權重 + 每人一條小指紋</b>。</div>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">14</span><span class="ttl">兩個旋鈕（風格強度 / 取樣步數）</span></div>
+    <p class="say"><q>網頁上有兩個旋鈕。「風格強度」控制要多用力模仿，像化妝濃淡——調低自然、調高像，太高會僵硬走音，建議停中間。另一個「取樣步數」是聲音要打磨幾遍，遍數越多越細緻、但越慢，一般九到十二就夠。</q></p>
+  </div>
+
+  <div class="slide"><div class="head"><span class="badge">15</span><span class="ttl">老實說（限制）</span></div>
     <p class="say"><q>老實說它還有不足：只會國語、不會台語；英文縮寫有時候會念錯，比如 LLM；官方自己也說，它現在定位是展示跟研究，還不是正式上線等級。</q></p>
-    <div class="tip">誠實講限制反而加分，顯得可信。（補充：tokenizer 其實已經為台語、客語、注音預留位置——是還沒訓練，不是做不到。）</div>
+    <div class="tip">誠實講限制反而加分。可補一句：tokenizer 其實已經為台語、客語、注音預留位置——是還沒訓練，不是做不到。</div>
   </div>
 
-  <div class="slide"><div class="head"><span class="badge">13</span><span class="ttl">Demo 時間</span><span class="et">收尾 + 現場操作</span></div>
-    <p class="say"><q>好，講夠多了，我們直接來玩。我示範三個：先打一句長範例念念看；再選內建語者、按試聽；最後錄一段我自己的聲音來克隆，看像不像。大家也可以拿手機開這個網址，一起試。</q></p>
+  <div class="slide big-howto"><div class="head"><span class="badge">16</span><span class="ttl">Demo 時間</span><span class="et">收尾 + 現場操作</span></div>
+    <p class="say"><q>好，講夠多了，我們直接來玩。我示範三個：先打一句長範例念念看；再選內建語者、按試聽；最後錄一段我自己的聲音來克隆——模式選「語音接續」，記得照著腳本念。大家也可以拿手機開這個網址，一起試。</q></p>
     <div class="tip">demo 時記得讓大家看上面那條「GPU 即時使用率」在合成時衝高，很有戲劇效果。網址：bluemagpie.intemotech.com</div>
   </div>
 
