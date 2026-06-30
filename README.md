@@ -5,7 +5,7 @@ A demo **web portal** and **FastAPI inference service** for
 an open-source **Taiwanese-Mandarin** text-to-speech & voice-cloning model.
 
 > 🎙️ Live demo (synthesize / clone): **https://bluemagpie.intemotech.com**
-> 📊 Slides & presenter script (GitHub Pages): **https://cutedogspark.github.io/bluemagpie-tts-portal/**
+> 📊 Slides (GitHub Pages): **https://cutedogspark.github.io/bluemagpie-tts-portal/**
 
 This repo is the **serving + UI layer** around the model (not the model itself).
 It gives you a clean browser experience and a small HTTP API on top of BlueMagpie-TTS.
@@ -34,8 +34,7 @@ A self-contained explainer deck ships in `portal/slides.html` — view it online
 - **Live GPU monitor** — utilization + this-service memory, polled during synthesis.
 - **Adjustable** `cfg_value` (style strength) and `inference_timesteps` (sampling steps).
 - **Generation history** for side-by-side comparison; example sentences; mic recording.
-- A self-contained **architecture slide deck** (`portal/slides.html`) and presenter
-  notes (`portal/script.html`).
+- A self-contained **architecture slide deck** (`portal/slides.html`).
 
 ## Layout
 
