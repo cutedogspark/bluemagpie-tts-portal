@@ -4,14 +4,17 @@ A demo **web portal** and **FastAPI inference service** for
 [OpenFormosa/BlueMagpie-TTS](https://huggingface.co/OpenFormosa/BlueMagpie-TTS) —
 an open-source **Taiwanese-Mandarin** text-to-speech & voice-cloning model.
 
-> Live demo: **https://bluemagpie.intemotech.com**
+> 🎙️ Live demo (synthesize / clone): **https://bluemagpie.intemotech.com**
+> 📊 Slides & presenter script (GitHub Pages): **https://cutedogspark.github.io/bluemagpie-tts-portal/**
 
 This repo is the **serving + UI layer** around the model (not the model itself).
 It gives you a clean browser experience and a small HTTP API on top of BlueMagpie-TTS.
 
 ## Slide deck preview
 
-A self-contained explainer deck ships in `portal/slides.html` (open in a browser, `←` / `→` to navigate, `F` for fullscreen):
+A self-contained explainer deck ships in `portal/slides.html` — view it online at
+**[cutedogspark.github.io/bluemagpie-tts-portal](https://cutedogspark.github.io/bluemagpie-tts-portal/)**
+(`←` / `→` to navigate, `F` for fullscreen):
 
 ![Model architecture slide](assets/slides-model.png)
 
